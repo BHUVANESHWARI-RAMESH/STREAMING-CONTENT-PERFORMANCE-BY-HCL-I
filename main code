@@ -1,0 +1,291 @@
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sqlite3
+
+
+
+df = pd.read_csv("netflix_titles.csv.zip")
+
+print("===================================")
+print(" DATASET LOADED SUCCESSFULLY ")
+print("===================================\n")
+
+print(df.head())
+
+
+print("\n===================================")
+print(" DATA CLEANING ")
+print("===================================\n")
+
+
+df.drop_duplicates(inplace=True)
+
+
+df.fillna("Unknown", inplace=True)
+
+
+df.columns = df.columns.str.strip()
+
+print("Missing Values:\n")
+print(df.isnull().sum())
+
+
+
+print("\n===================================")
+print(" TOP GENRES ")
+print("===================================\n")
+
+genre_counts = df['listed_in'].str.split(',', expand=True).stack()
+
+genre_counts = genre_counts.str.strip()
+
+top_genres = genre_counts.value_counts().head(10)
+
+print(top_genres)
+
+
+
+plt.figure(figsize=(10,6))
+
+sns.barplot(
+    x=top_genres.values,
+    y=top_genres.index
+)
+
+plt.title("Top 10 Genres")
+plt.xlabel("Count")
+plt.ylabel("Genres")
+
+plt.show()
+
+
+
+print("\n===================================")
+print(" MOVIES VS TV SHOWS ")
+print("===================================\n")
+
+print(df['type'].value_counts())
+
+plt.figure(figsize=(6,4))
+
+sns.countplot(
+    x='type',
+    data=df
+)
+
+plt.title("Movies vs TV Shows")
+
+plt.show()
+
+
+
+print("\n===================================")
+print(" TOP COUNTRIES ")
+print("===================================\n")
+
+top_countries = df['country'].value_counts().head(10)
+
+print(top_countries)
+
+plt.figure(figsize=(10,6))
+
+sns.barplot(
+    x=top_countries.values,
+    y=top_countries.index
+)
+
+plt.title("Top 10 Countries")
+
+plt.xlabel("Content Count")
+plt.ylabel("Country")
+
+plt.show()
+
+
+
+print("\n===================================")
+print(" RELEASE YEAR TREND ")
+print("===================================\n")
+
+release_trend = df['release_year'].value_counts().sort_index()
+
+plt.figure(figsize=(12,6))
+
+release_trend.plot()
+
+plt.title("Content Release Trend")
+
+plt.xlabel("Year")
+plt.ylabel("Number of Releases")
+
+plt.show()
+
+
+print("\n===================================")
+print(" CONTENT RATING DISTRIBUTION ")
+print("===================================\n")
+
+print(df['rating'].value_counts())
+
+plt.figure(figsize=(10,6))
+
+sns.countplot(
+    y='rating',
+    data=df,
+    order=df['rating'].value_counts().index
+)
+
+plt.title("Content Ratings Distribution")
+
+plt.show()
+
+
+
+print("\n===================================")
+print(" TOP DIRECTORS ")
+print("===================================\n")
+
+top_directors = df['director'].value_counts().head(10)
+
+print(top_directors)
+
+plt.figure(figsize=(10,6))
+
+sns.barplot(
+    x=top_directors.values,
+    y=top_directors.index
+)
+
+plt.title("Top Directors")
+
+plt.xlabel("Content Count")
+plt.ylabel("Director")
+
+plt.show()
+
+
+
+
+
+invalid_ratings = ['74 min', '84 min', '66 min']
+
+df['rating'] = df['rating'].replace(invalid_ratings, 'Unknown')
+
+
+
+print("\n===================================")
+print(" SQL DATABASE STORAGE ")
+print("===================================\n")
+
+conn = sqlite3.connect("streaming_analysis.db")
+
+
+df.to_sql(
+    "streaming_content",
+    conn,
+    if_exists="replace",
+    index=False
+)
+
+print("Database Created Successfully")
+print("Table Name : streaming_content")
+
+
+
+print("\n===================================")
+print(" AVAILABLE SQL TABLES ")
+print("===================================\n")
+
+query_tables = """
+SELECT name
+FROM sqlite_master
+WHERE type='table';
+"""
+
+tables = pd.read_sql(query_tables, conn)
+
+print(tables)
+
+
+
+print("\n===================================")
+print(" SQL QUERY - TOP COUNTRIES ")
+print("===================================\n")
+
+query1 = """
+SELECT country, COUNT(*) as total_content
+FROM streaming_content
+GROUP BY country
+ORDER BY total_content DESC
+LIMIT 10;
+"""
+
+result1 = pd.read_sql(query1, conn)
+
+print(result1)
+
+
+print("\n===================================")
+print(" SQL QUERY - MOVIES VS TV SHOWS ")
+print("===================================\n")
+
+query2 = """
+SELECT type, COUNT(*) as total
+FROM streaming_content
+GROUP BY type;
+"""
+
+result2 = pd.read_sql(query2, conn)
+
+print(result2)
+
+
+
+print("\n===================================")
+print(" SQL QUERY - TOP RATINGS ")
+print("===================================\n")
+
+query3 = """
+SELECT rating, COUNT(*) as total
+FROM streaming_content
+GROUP BY rating
+ORDER BY total DESC;
+"""
+
+result3 = pd.read_sql(query3, conn)
+
+print(result3)
+
+
+
+print("""
+
+
+1. Drama and Comedy are the most dominant genres
+   across the streaming platform.
+
+2. Movies are more available than TV Shows.
+
+3. The United States contributes the highest amount
+   of streaming content.
+
+4. Content production increased rapidly after 2015.
+
+5. TV-MA and TV-14 are the most common ratings.
+
+6. Action, Thriller, and Drama genres show strong
+   audience engagement and popularity.
+
+7. Streaming platforms focus heavily on entertainment
+   and multi-genre content strategies.
+
+""")
+
+
+
+conn.close()
+
+print("\nSQL Connection Closed Successfully")
