@@ -1,0 +1,87 @@
+===================================
+ SQL DATABASE STORAGE 
+===================================
+
+Database Created Successfully
+Table Name : streaming_content
+
+===================================
+ AVAILABLE SQL TABLES 
+===================================
+
+                name
+0  streaming_content
+
+===================================
+ SQL QUERY - TOP COUNTRIES 
+===================================
+
+          country  total_content
+0   United States           2818
+1           India            972
+2         Unknown            831
+3  United Kingdom            419
+4           Japan            245
+5     South Korea            199
+6          Canada            181
+7           Spain            145
+8          France            124
+9          Mexico            110
+
+===================================
+ SQL QUERY - MOVIES VS TV SHOWS 
+===================================
+
+      type  total
+0    Movie   6131
+1  TV Show   2676
+
+===================================
+ SQL QUERY - TOP RATINGS 
+===================================
+
+      rating  total
+0      TV-MA   3207
+1      TV-14   2160
+2      TV-PG    863
+3          R    799
+4      PG-13    490
+5      TV-Y7    334
+6       TV-Y    307
+7         PG    287
+8       TV-G    220
+9         NR     80
+10         G     41
+11   Unknown      7
+12  TV-Y7-FV      6
+13        UR      3
+14     NC-17      3
+
+==================================================
+        STREAMING CONTENT INSIGHTS REPORT
+==================================================
+
+1. Drama and Comedy are the most dominant genres
+   across the streaming platform.
+
+2. Movies are more available than TV Shows.
+
+3. The United States contributes the highest amount
+   of streaming content.
+
+4. Content production increased rapidly after 2015.
+
+5. TV-MA and TV-14 are the most common ratings.
+
+6. Action, Thriller, and Drama genres show strong
+   audience engagement and popularity.
+
+7. Streaming platforms focus heavily on entertainment
+   and multi-genre content strategies.
+
+==================================================
+             PROJECT COMPLETED
+==================================================
+
+
+SQL Connection Closed Successfully
